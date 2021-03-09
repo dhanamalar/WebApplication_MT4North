@@ -25,6 +25,7 @@ namespace MedtechInnovationModel.Areas.Identity.Pages.Account.Manage
 
         public string Username { get; set; }
 
+
         [TempData]
         public string StatusMessage { get; set; }
 
@@ -36,6 +37,11 @@ namespace MedtechInnovationModel.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+            [Required]
+            [Display(Name = "Förnamn")]
+            [DataType(DataType.Text)]
+            public String FirstName { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -47,7 +53,8 @@ namespace MedtechInnovationModel.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                FirstName = user.FirstName
             };
         }
 
@@ -87,6 +94,13 @@ namespace MedtechInnovationModel.Areas.Identity.Pages.Account.Manage
                     return RedirectToPage();
                 }
             }
+
+            if (Input.FirstName != user.FirstName)
+            {
+                user.FirstName = Input.FirstName;
+            }
+
+            await _userManager.UpdateAsync(user);
 
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";

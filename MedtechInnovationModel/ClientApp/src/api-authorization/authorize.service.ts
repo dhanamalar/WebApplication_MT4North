@@ -31,6 +31,7 @@ export enum AuthenticationResultStatus {
 
 export interface IUser {
   name?: string;
+  firstName?: string;
 }
 
 @Injectable({
@@ -61,6 +62,7 @@ export class AuthorizeService {
         map(user => user && user.access_token));
   }
 
+
   // We try to authenticate the user in three different ways:
   // 1) We try to see if we can authenticate the user silently. This happens
   //    when the user is already logged in on the IdP and is done using a hidden iframe
@@ -72,8 +74,10 @@ export class AuthorizeService {
   public async signIn(state: any): Promise<IAuthenticationResult> {
     await this.ensureUserManagerInitialized();
     let user: User = null;
+
     try {
       user = await this.userManager.signinSilent(this.createArguments());
+
       this.userSubject.next(user.profile);
       return this.success(state);
     } catch (silentError) {
